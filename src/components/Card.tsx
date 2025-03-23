@@ -18,7 +18,7 @@ export default function Card({ campgroundName, imgSrc, onRating }: CardProps) {
         <Image src={imgSrc} alt="Product Picture" fill className="object-cover rounded-t-lg relative" />
       </div>
       <div className="w-full h-[30%] p-[10px]">
-        <h2 className="text-[14px] font-bold mb-1 text-[#501717] underline">{campgroundName}</h2>
+        <h2 className="text-[14px] font-bold mb-1 text-[#501717]">{campgroundName}</h2>
 
         {onRating && ( // แสดง Rating เฉพาะเมื่อ onRating ถูกส่งมา
           <div onClick={(e) => e.stopPropagation()}>
