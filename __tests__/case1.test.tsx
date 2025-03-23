@@ -6,21 +6,21 @@ const initialState = { bookItems: [] }
 const testBookingData1 = {
   nameLastname: "David Smith",
   tel: "0845526325",
-  venue: "Bloom",
+  campground: "Bloom",
   bookDate: "2025/03/21"
 };
 
 const testBookingData2 = {
   nameLastname: "Jane Adison",
   tel: "0925447885",
-  venue: "GrandTable",
+  campground: "GrandTable",
   bookDate: "2025/05/18"
 };
 
 const testBookingData3 = {
   nameLastname: "James Weston",
   tel: "0827789544",
-  venue: "Bloom",
+  campground: "Bloom",
   bookDate: "2025/03/21"
 };
 
@@ -37,7 +37,7 @@ describe('bookSlice', () => {
     const afterRemoveReducer = bookSlice(afterAddReducer3, removeBooking(testBookingData2))
     expect(afterRemoveReducer.bookItems.length).toBe(1)
     expect(afterRemoveReducer.bookItems[0].tel).toBe("0827789544")
-    expect(afterRemoveReducer.bookItems[0].venue).toBe("Bloom")
+    expect(afterRemoveReducer.bookItems[0].campground).toBe("Bloom")
   })
 
   

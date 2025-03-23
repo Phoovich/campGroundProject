@@ -12,7 +12,7 @@ export default function BookingForm() {
   const [formData, setFormData] = useState({
     nameLastname: '',
     contactNumber: '',
-    venue: '',
+    campground: '',
     bookDate: dayjs()
   });
 
@@ -22,7 +22,7 @@ export default function BookingForm() {
     const bookingItem = {
       nameLastname: formData.nameLastname,
       tel: formData.contactNumber,
-      venue: formData.venue,
+      campground: formData.campground,
       bookDate: formData.bookDate.format('YYYY-MM-DD')
     };
 
@@ -31,7 +31,7 @@ export default function BookingForm() {
     setFormData({
       nameLastname: '',
       contactNumber: '',
-      venue: '',
+      campground: '',
       bookDate: dayjs()
     });
   };
@@ -77,8 +77,8 @@ export default function BookingForm() {
           </LocalizationProvider>
           <Select
             className="w-full"
-            value={formData.venue}
-            onChange={(e) => setFormData({...formData, venue: e.target.value})}
+            value={formData.campground}
+            onChange={(e) => setFormData({...formData, campground: e.target.value})}
             fullWidth
             required
           >
@@ -88,10 +88,10 @@ export default function BookingForm() {
           </Select>
           <button
             type="submit"
-            name="Book Venue"
+            name="Book Campground"
             className="bg-blue-500 w-full text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors"
           >
-            Book Venue
+            Book Campground
           </button>
         </form>
       </div>

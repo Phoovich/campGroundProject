@@ -1,4 +1,4 @@
-interface VenueItem {
+interface CampgroundItem {
     _id: string,
     name: string,
     address: string,
@@ -14,9 +14,9 @@ interface VenueItem {
   
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   
-  const getVenue = async (
+  const getCampground = async (
     id: string
-  ): Promise<{ success: boolean; data: VenueItem }> => {
+  ): Promise<{ success: boolean; data: CampgroundItem }> => {
     await delay(300);
   
     const response = await fetch(
@@ -33,4 +33,4 @@ interface VenueItem {
     return json;
   };
   
-  export default getVenue;
+  export default getCampground;

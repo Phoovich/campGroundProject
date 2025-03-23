@@ -23,7 +23,7 @@ export default function Banner() {
 
   const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    router.push("/venue");
+    router.push("/campground");
   };
 
   return (

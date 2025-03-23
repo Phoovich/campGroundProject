@@ -1,16 +1,16 @@
 import { Suspense } from 'react';
 import Image from 'next/image';
 import LinearProgress from '@mui/material/LinearProgress';
-import getVenue from '@/libs/getVenue';
+import getCampground from '@/libs/getCampground';
 
-export default async function VenueDetails({ 
+export default async function CampgroundDetails({ 
   params 
 }: { 
   params: { vid: string } 
 }) {
   try {
-    const venueResponse = await getVenue(params.vid);
-    const venueData = venueResponse.data;
+    const campgroundResponse = await getCampground(params.vid);
+    const campgroundData = campgroundResponse.data;
 
     return (
       <main className="flex flex-col items-center min-h-screen p-5">
@@ -19,8 +19,8 @@ export default async function VenueDetails({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="relative h-96 rounded-xl overflow-hidden">
                 <Image
-                  src={venueData.picture}
-                  alt={venueData.name}
+                  src={campgroundData.picture}
+                  alt={campgroundData.name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -30,38 +30,38 @@ export default async function VenueDetails({
 
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h1 className="text-3xl font-bold mb-6 text-gray-800">
-                  {venueData.name}
+                  {campgroundData.name}
                 </h1>
 
                 <div>
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">Address:</span>
-                    <p className="text-gray-800">{venueData.address}</p>
+                    <p className="text-gray-800">{campgroundData.address}</p>
                   </div>
                   
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">Province:</span>
-                    <p className="text-gray-800">{venueData.province}</p>
+                    <p className="text-gray-800">{campgroundData.province}</p>
                   </div>
 
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">District:</span>
-                    <p className="text-gray-800">{venueData.district}</p>
+                    <p className="text-gray-800">{campgroundData.district}</p>
                   </div>
 
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">Postal Code:</span>
-                    <p className="text-gray-800">{venueData.postalcode}</p>
+                    <p className="text-gray-800">{campgroundData.postalcode}</p>
                   </div>
 
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">Tel:</span>
-                    <p className="text-gray-800">{venueData.tel}</p>
+                    <p className="text-gray-800">{campgroundData.tel}</p>
                   </div>
 
                   <div className="flex">
                     <span className="w-32 font-medium text-gray-800">Daily Rate:</span>
-                    <p className="text-gray-800">{venueData.dailyrate}</p>
+                    <p className="text-gray-800">{campgroundData.dailyrate}</p>
                   </div>
                 </div>
               </div>

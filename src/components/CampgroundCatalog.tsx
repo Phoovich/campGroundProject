@@ -2,7 +2,7 @@ import Card from "./Card"
 import Link from "next/link"
 
 
-interface VenueItem {
+interface CampgroundItem {
     _id: string;
     name: string;
     address: string;
@@ -16,31 +16,31 @@ interface VenueItem {
     id: string;
   }
   
-  interface VenueJson {
+  interface CampgroundJson {
     success: boolean;
     count: number;
-    data: VenueItem[];
+    data: CampgroundItem[];
   }
   
 
-export default async function VenueCatalog({venuesJson} : {venuesJson:Promise<VenueJson>}) {
-    const venuesJsonReady = await venuesJson
+export default async function CampgroundCatalog({campgroundsJson} : {campgroundsJson:Promise<CampgroundJson>}) {
+    const campgroundsJsonReady = await campgroundsJson
 
     return (
         <div className="font-serif">
             <h2 className="text-xl text-black text-center my-4">
-                Explore {venuesJsonReady.count} camps in our camp catalog
+                Explore {campgroundsJsonReady.count} camps in our camp catalog
             </h2>
 
             <div style={{margin:"20px", display:"flex",
                 flexDirection:"row", alignContent:"space-around",
                 justifyContent:"space-around", flexWrap:"wrap"}}>
                 {
-                    venuesJsonReady.data.map((venueItem:VenueItem) => (
-                        <Link href={`/venue/${venueItem.id}`} className="w-1/5"> 
+                    campgroundsJsonReady.data.map((campgroundItem:CampgroundItem) => (
+                        <Link href={`/campground/${campgroundItem.id}`} className="w-1/5"> 
                             <Card 
-                                venueName={venueItem.name} 
-                                imgSrc={venueItem.picture}                     
+                                campgroundName={campgroundItem.name} 
+                                imgSrc={campgroundItem.picture}                     
                             />
                         </Link>
                     ))

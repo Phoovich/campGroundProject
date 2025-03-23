@@ -3,7 +3,7 @@ export default async function userLogIn(
     userPassword: string
   ) {
     const response = await fetch(
-      `https://a08-venue-explorer-backend-2.vercel.app/api/v1/auth/login`,
+      `https://a08-campground-explorer-backend-2.vercel.app/api/v1/auth/login`,
       {
         method: "POST",
         headers: {
@@ -17,7 +17,7 @@ export default async function userLogIn(
     );
     console.log(response.status);
     if (!response.ok) {
-      throw new Error("Failed to fetch venues");
+      throw new Error("Failed to fetch campgrounds");
     }
     return await response.json();
   }

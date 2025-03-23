@@ -2,11 +2,11 @@
 
 import { Suspense } from 'react';
 import LinearProgress from '@mui/material/LinearProgress';
-import VenueCatalog from '@/components/VenueCatalog';
-import { getVenues } from '@/libs/getCampgrounds';
+import CampgroundCatalog from '@/components/CampgroundCatalog';
+import { getCampgrounds } from '@/libs/getCampgrounds';
 
-const VenuePage: React.FC = () => {
-  const venuesPromise = getVenues();
+const CampgroundPage: React.FC = () => {
+  const campgroundsPromise = getCampgrounds();
 
   return (
     <div className="container mx-auto p-6">
@@ -30,10 +30,10 @@ const VenuePage: React.FC = () => {
           </div>
         }
       >
-        <VenueCatalog venuesJson={venuesPromise} />
+        <CampgroundCatalog campgroundsJson={campgroundsPromise} />
       </Suspense>
     </div>
   );
 };
 
-export default VenuePage;
+export default CampgroundPage;

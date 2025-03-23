@@ -19,7 +19,7 @@ export default function BookingList() {
       
       {bookItems.length === 0 ? (
         <div className="text-center text-gray-500 text-xl">
-          No Venue Booking
+          No Campground Booking
         </div>
       ) : (
         <div className="grid gap-4 max-w-2xl mx-auto">
@@ -38,8 +38,8 @@ export default function BookingList() {
                   <span className="text-gray-600">{item.tel}</span>
                 </div>
                 <div className="flex gap-2 items-baseline">
-                  <span className="font-semibold text-gray-800 min-w-[60px]">Venue:</span>
-                  <span className="text-gray-600">{item.venue}</span>
+                  <span className="font-semibold text-gray-800 min-w-[60px]">Campground:</span>
+                  <span className="text-gray-600">{item.campground}</span>
                 </div>
                 <div className="flex gap-2 items-baseline">
                   <span className="font-semibold text-gray-800 min-w-[60px]">Date:</span>

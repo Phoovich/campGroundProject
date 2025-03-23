@@ -10,12 +10,12 @@ export function renderWithProviders(
       preloadedState = { bookSlice: {bookItems: [ {
         nameLastname: "Jane Adison",
         tel: "0925447885",
-        venue: "GrandTable",
+        campground: "GrandTable",
         bookDate: "2025/05/18"
       }, {
         nameLastname: "James Weston",
         tel: "0827789544",
-        venue: "Bloom",
+        campground: "Bloom",
         bookDate: "2025/03/21"
       }]}},
       store = configureStore({
