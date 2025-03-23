@@ -8,7 +8,7 @@ export default async function TopMenu() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="fixed top-0 w-full h-[50px] flex items-center justify-center bg-white/80 backdrop-blur-md shadow-md z-50 text-sm">
+    <div className="fixed top-0 w-full h-[60px] flex items-center justify-center px-6 bg-white/80 backdrop-blur-md shadow-md z-50">
       {/* โลโก้ */}
       <Link href="/" className="cursor-pointer">
         <Image
