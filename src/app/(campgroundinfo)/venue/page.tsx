@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import LinearProgress from '@mui/material/LinearProgress';
 import VenueCatalog from '@/components/VenueCatalog';
-import { getVenues } from '@/libs/getVenues';
+import { getVenues } from '@/libs/getCampgrounds';
 
 const VenuePage: React.FC = () => {
   const venuesPromise = getVenues();
