@@ -1,15 +1,17 @@
 import Link from "next/link";
-import styles from './topmenu.module.css'
 
 type MenuItemProps = {
-  label: string;
-  href: string;
+  title: string;
+  pageRef: string;
 };
 
-export default function TopMenuItem({ title, pageRef }: { title: string, pageRef: string }) {
+export default function TopMenuItem({ title, pageRef }: MenuItemProps) {
   return (
-      <Link href={pageRef} className={styles.itemcontainer}>
-          {title}
-      </Link>
+    <Link
+      href={pageRef}
+      className="px-4 py-2 text-gray-700 hover:text-cyan-600 transition-all"
+    >
+      {title}
+    </Link>
   );
 }

@@ -10,7 +10,7 @@ const VenuePage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Venues</h1>
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Campgrounds</h1>
       
       <Suspense 
         fallback={
@@ -26,7 +26,7 @@ const VenuePage: React.FC = () => {
                 }}
               />
             </div>
-            <p className="text-sm text-gray-600">Loading venues...</p>
+            <p className="text-sm text-gray-600">Loading campgrounds...</p>
           </div>
         }
       >

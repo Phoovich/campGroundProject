@@ -29,7 +29,7 @@ export default async function VenueCatalog({venuesJson} : {venuesJson:Promise<Ve
     return (
         <div className="font-serif">
             <h2 className="text-xl text-black text-center my-4">
-                Explore {venuesJsonReady.count} venues in our venue catalog
+                Explore {venuesJsonReady.count} camps in our camp catalog
             </h2>
 
             <div style={{margin:"20px", display:"flex",

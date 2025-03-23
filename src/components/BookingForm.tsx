@@ -39,7 +39,7 @@ export default function BookingForm() {
   return (
     <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
       <div className="flex flex-col w-full max-w-md justify-center items-center bg-white text-black p-10 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Venue Booking</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">Camp Ground Booking</h1>
         <form 
           className="space-y-4 w-full flex flex-col items-center"
           onSubmit={handleSubmit}
