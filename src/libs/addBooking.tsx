@@ -1,11 +1,11 @@
 export async function addBooking({
-  capmgroundId,
+  campgroundId,
   checkInDate,
   checkOutDate,
   userId,
   token, // Add token parameter
 }: {
-  capmgroundId: string;
+  campgroundId: string;
   checkInDate: Date;
   checkOutDate: Date;
   userId: string;
@@ -17,7 +17,7 @@ export async function addBooking({
     typeof token === "object" && token.token ? token.token : token;
 
   const response = await fetch(
-    `https://swp-2-backend.vercel.app/api/v1/campgrounds/${capmgroundId}/bookings`,
+    `https://swp-2-backend.vercel.app/api/v1/campgrounds/${campgroundId}/bookings`,
     {
       method: "POST",
       headers: {
@@ -28,7 +28,7 @@ export async function addBooking({
         checkInDate: checkInDate,
         checkOutDate: checkOutDate,
         user: userId,
-        campground: capmgroundId,
+        campground: campgroundId,
       }),
     },
   );

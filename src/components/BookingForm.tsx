@@ -66,9 +66,9 @@ export default function BookingForm() {
         return;
       }
 
-      // Now passing all required parameters to addAppointment
+      // Now passing all required parameters to addBooking
       const bookingData = await addBooking({
-        capmgroundId: campgroundId,
+        campgroundId: campgroundId,
         checkInDate: checkInDateObj,
         checkOutDate: checkOutDateObj,
         userId: userProfile._id,
