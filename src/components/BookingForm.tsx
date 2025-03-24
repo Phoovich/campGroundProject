@@ -71,7 +71,6 @@ export default function BookingForm() {
         campgroundId: campgroundId,
         checkInDate: checkInDateObj,
         checkOutDate: checkOutDateObj,
-        userId: userProfile._id,
         token: session.user.token,
       });
 
