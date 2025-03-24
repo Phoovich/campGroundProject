@@ -44,10 +44,10 @@ export default function CampgroundDetails({
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-10 px-4 sm:px-6">
+    <main className="min-h-screen bg-gradient-to-br from-green-600 to-blue-50 py-10 px-4 sm:px-6">
       {/* เส้นทางการนำทาง (Breadcrumb) */}
       <div className="max-w-6xl mx-auto mb-6">
-        <nav className="text-sm text-gray-500 mb-6">
+        <nav className="text-sm text-white mb-6">
           <ol className="flex items-center space-x-2">
             <li>
               <Link href="/" className="hover:text-green-600 transition-colors">
@@ -94,7 +94,7 @@ export default function CampgroundDetails({
                 />
               </svg>
             </li>
-            <li className="text-green-600 font-medium">
+            <li className="text-orange-200 font-medium">
               {campgroundData.name}
             </li>
           </ol>

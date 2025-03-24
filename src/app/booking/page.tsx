@@ -42,10 +42,13 @@ export default function BookingPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-10 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
         {/* เส้นทางการนำทาง (Breadcrumb) */}
-        <nav className="text-sm text-gray-500 mb-6">
+        <nav className="text-sm text-white mb-6">
           <ol className="flex items-center space-x-2">
             <li>
-              <Link href="/" className="hover:text-green-600 transition-colors">
+              <Link
+                href="/"
+                className=" hover:text-green-600 transition-colors"
+              >
                 หน้าหลัก
               </Link>
             </li>
@@ -352,4 +355,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
