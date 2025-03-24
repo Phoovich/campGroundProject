@@ -72,8 +72,8 @@ const Mybooking = async () => {
               )}
             </p>
 
-            {/* ส่งข้อมูลที่ await แล้วไปที่ BookingList */}
-            <BookingList bookingList={bookingData} />
+            {/* ส่ง token ไปพร้อมกับข้อมูล bookingList */}
+            <BookingList bookingList={bookingData} token={session.user.token} />
           </div>
         </div>
       </div>

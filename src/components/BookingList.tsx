@@ -1,6 +1,8 @@
-"use client"; // เพิ่มบรรทัดนี้เพื่อแปลงเป็น Client Component
+"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import deleteBooking from "@/libs/deleteBooking";
 
 interface bookingList {
   success: boolean;
@@ -23,16 +25,83 @@ interface bookingListItem {
   createdAt: Date;
 }
 
-// ไม่ใช้ async ที่นี่
 export default function BookingList({
   bookingList,
+  token,
 }: {
   bookingList: bookingList;
+  token: string;
 }) {
-  // ใช้ useEffect สำหรับการ log ข้อมูลเมื่อ component mount
+  const router = useRouter();
+  const [bookings, setBookings] = useState<bookingListItem[]>([]);
+  const [isDeleting, setIsDeleting] = useState<{ [key: string]: boolean }>({});
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  // เริ่มต้นด้วยข้อมูลจาก prop
   useEffect(() => {
+    if (bookingList?.data) {
+      setBookings(bookingList.data);
+    }
     console.log("BookingList Data:", JSON.stringify(bookingList, null, 2));
   }, [bookingList]);
+
+  // ฟังก์ชันสำหรับลบการจอง
+  const handleDeleteBooking = async (
+    bookingId: string,
+    campgroundName: string,
+  ) => {
+    // ตรวจสอบการยืนยันจากผู้ใช้
+    const isConfirmed = window.confirm(
+      `ยืนยันการยกเลิกการจองแคมป์ "${campgroundName}" หรือไม่?`,
+    );
+
+    if (!isConfirmed) return;
+
+    // แสดงสถานะกำลังลบ
+    setIsDeleting((prev) => ({ ...prev, [bookingId]: true }));
+
+    try {
+      const result = await deleteBooking(bookingId, token);
+
+      if (result.success) {
+        // อัปเดตรายการโดยลบการจองที่ถูกลบออกไป
+        setBookings((prev) =>
+          prev.filter((booking) => booking._id !== bookingId),
+        );
+
+        // แสดงข้อความสำเร็จ
+        setMessage({
+          type: "success",
+          text: `ยกเลิกการจองแคมป์ "${campgroundName}" สำเร็จ`,
+        });
+
+        // รีเฟรชข้อมูลหลังจากลบ
+        setTimeout(() => {
+          router.refresh();
+        }, 2000);
+      } else {
+        // แสดงข้อความข้อผิดพลาด
+        setMessage({
+          type: "error",
+          text: result.message || "เกิดข้อผิดพลาดในการยกเลิกการจอง",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to delete booking:", error);
+      setMessage({ type: "error", text: "เกิดข้อผิดพลาดในการยกเลิกการจอง" });
+    } finally {
+      // คืนค่าสถานะกำลังลบ
+      setIsDeleting((prev) => ({ ...prev, [bookingId]: false }));
+
+      // ซ่อนข้อความหลังจากผ่านไป 5 วินาที
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    }
+  };
 
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString("th-TH", {
@@ -42,8 +111,7 @@ export default function BookingList({
   });
 
   // ถ้าไม่มีข้อมูล
-  if (!bookingList?.data || bookingList.data.length === 0) {
-    console.log("No bookings found");
+  if (!bookings || bookings.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
@@ -80,14 +148,45 @@ export default function BookingList({
 
   return (
     <div className="space-y-6">
+      {/* ข้อความแจ้งเตือน */}
+      {message && (
+        <div
+          className={`mb-4 p-4 rounded-md ${message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}
+        >
+          <div className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-5 w-5 mr-2 ${message.type === "success" ? "text-green-500" : "text-red-500"}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              {message.type === "success" ? (
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              ) : (
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              )}
+            </svg>
+            {message.text}
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-gray-500">วันที่: {formattedDate}</p>
         <p className="text-sm text-gray-500">
-          จำนวนการจองทั้งหมด: {bookingList.count} รายการ
+          จำนวนการจองทั้งหมด: {bookings.length} รายการ
         </p>
       </div>
 
-      {bookingList.data.map((booking, index) => {
+      {bookings.map((booking, index) => {
         // แปลงวันที่เพื่อแสดงผล
         const checkInDate = new Date(booking.checkInDate).toLocaleDateString(
           "th-TH",
@@ -115,19 +214,6 @@ export default function BookingList({
 
         // สร้าง image path ตามรูปแบบที่ต้องการ
         const imagePath = `/img/${booking.campground.name}.jpg`;
-
-        // ใช้ useEffect เพื่อ log ข้อมูลแต่ละรายการ
-        useEffect(() => {
-          console.log(`Booking ${index + 1}:`, {
-            id: booking._id,
-            user: booking.user,
-            campground: booking.campground,
-            checkInDate: booking.checkInDate,
-            checkOutDate: booking.checkOutDate,
-            createdAt: booking.createdAt,
-          });
-          console.log(`Image path for booking ${index + 1}:`, imagePath);
-        }, []);
 
         return (
           <div
@@ -220,22 +306,26 @@ export default function BookingList({
 
                   <div className="flex space-x-2">
                     <button
-                      className="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm hover:bg-gray-50 transition-colors"
-                      onClick={() => {
-                        console.log("Cancel booking clicked:", booking._id);
-                      }}
+                      className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                        isDeleting[booking._id]
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : "bg-red-50 text-red-600 border border-red-300 hover:bg-red-100"
+                      }`}
+                      onClick={() =>
+                        handleDeleteBooking(
+                          booking._id,
+                          booking.campground.name,
+                        )
+                      }
+                      disabled={isDeleting[booking._id]}
                     >
-                      ยกเลิกการจอง
+                      {isDeleting[booking._id]
+                        ? "กำลังยกเลิก..."
+                        : "ยกเลิกการจอง"}
                     </button>
                     <a
                       href={`/campground/${booking.campground.id}`}
                       className="px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
-                      onClick={() => {
-                        console.log(
-                          "View campground clicked:",
-                          booking.campground.id,
-                        );
-                      }}
                     >
                       ดูแคมป์
                     </a>
