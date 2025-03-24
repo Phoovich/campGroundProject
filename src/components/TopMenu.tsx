@@ -22,7 +22,6 @@ export default async function TopMenu() {
 
       {/* เมนูตรงกลาง */}
       <div className="flex items-center gap-6 mx-6">
-        <TopMenuItem title="Booking" pageRef="/booking" />
         <TopMenuItem title="MyBooking" pageRef="/mybooking" />
       </div>
 
