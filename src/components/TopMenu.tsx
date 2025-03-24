@@ -39,7 +39,7 @@ export default async function TopMenu() {
             <Link href="/api/auth/signin" className="text-cyan-600">
               Sign-in
             </Link>
-            <Link href="/api/auth/register" className="text-cyan-600">
+            <Link href="/register" className="text-cyan-600">
               Sign-up
             </Link>
           </>

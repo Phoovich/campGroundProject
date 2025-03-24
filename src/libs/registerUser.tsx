@@ -4,7 +4,7 @@ export async function registerUser(userData: {
   password: string;
 }) {
   const response = await fetch(
-    "https://swp2backenddinopark.vercel.app/api/v1/auth/register",
+    "https://swp-2-backend.vercel.app/api/v1/auth/register",
     {
       method: "POST",
       headers: {
@@ -21,4 +21,3 @@ export async function registerUser(userData: {
 
   return await response.json(); // maybe returns user or token
 }
-

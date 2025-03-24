@@ -11,11 +11,14 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch("https://a08-venue-explorer-backend.vercel.app/api/v1/bookings", {
-          headers: {
-            Authorization: `Bearer ${session?.user.token}`,
+        const res = await fetch(
+          "https://swp-2-backend.vercel.app/api/v1/appointments",
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user.token}`,
+            },
           },
-        });
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch bookings");
@@ -35,12 +38,15 @@ export default function AdminBookingsPage() {
 
   const handleDelete = async (bookingId: string) => {
     try {
-      const res = await fetch(`https://a08-venue-explorer-backend.vercel.app/api/v1/bookings/${bookingId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${session?.user.token}`,
+      const res = await fetch(
+        `https://a08-venue-explorer-backend.vercel.app/api/v1/bookings/${bookingId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session?.user.token}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) throw new Error("Failed to delete booking");
 
@@ -51,7 +57,11 @@ export default function AdminBookingsPage() {
   };
 
   if (session?.user?.role !== "admin") {
-    return <p className="text-red-500 text-center mt-10">Unauthorized: Admins only</p>;
+    return (
+      <p className="text-red-500 text-center mt-10">
+        Unauthorized: Admins only
+      </p>
+    );
   }
 
   return (
@@ -64,21 +74,29 @@ export default function AdminBookingsPage() {
       ) : (
         <div className="grid gap-4">
           {bookings.map((booking) => (
-            <div key={booking._id} className="bg-white shadow rounded p-4 border-l-4 border-blue-500">
+            <div
+              key={booking._id}
+              className="bg-white shadow rounded p-4 border-l-4 border-blue-500"
+            >
               <div className="mb-2">
-                <span className="font-semibold">User:</span> {booking.user.name} ({booking.user.email})
+                <span className="font-semibold">User:</span> {booking.user.name}{" "}
+                ({booking.user.email})
               </div>
               <div className="mb-2">
-                <span className="font-semibold">Campground:</span> {booking.campground.name} – {booking.campground.address}
+                <span className="font-semibold">Campground:</span>{" "}
+                {booking.campground.name} – {booking.campground.address}
               </div>
               <div className="mb-2">
-                <span className="font-semibold">Date:</span> {new Date(booking.bookDate).toLocaleDateString()}
+                <span className="font-semibold">Date:</span>{" "}
+                {new Date(booking.bookDate).toLocaleDateString()}
               </div>
               <div className="mb-2">
-                <span className="font-semibold">Check-in:</span> {new Date(booking.checkInDate).toLocaleDateString()}
+                <span className="font-semibold">Check-in:</span>{" "}
+                {new Date(booking.checkInDate).toLocaleDateString()}
               </div>
               <div className="mb-2">
-                <span className="font-semibold">Check-out:</span> {new Date(booking.checkOutDate).toLocaleDateString()}
+                <span className="font-semibold">Check-out:</span>{" "}
+                {new Date(booking.checkOutDate).toLocaleDateString()}
               </div>
               <button
                 onClick={() => handleDelete(booking._id)}

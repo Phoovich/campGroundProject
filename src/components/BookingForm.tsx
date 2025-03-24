@@ -1,95 +1,166 @@
-'use client';
+"use client";
 
-import { useState } from "react";
-import { MenuItem, Select, TextField } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { addBooking } from "@/libs/addBooking";
+import getUserProfile from "@/libs/getUserProfile";
 import { useSession } from "next-auth/react";
-import dayjs, { Dayjs } from "dayjs";
 
+// Instead of using react-datepicker, we'll use the native date input
 export default function BookingForm() {
+  const [checkInDate, setCheckInDate] = useState<string>("");
+  const [checkOutDate, setCheckOutDate] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  const searchParams = useSearchParams();
+  const campgroundId = searchParams.get("campgroundId");
+  const router = useRouter();
   const { data: session } = useSession();
 
-  const [formData, setFormData] = useState({
-    campground: '',
-    checkInDate: dayjs(),
-    checkOutDate: dayjs().add(1, 'day'),
-  });
+  useEffect(() => {
+    // Fetch user profile when session is available
+    const fetchUserProfile = async () => {
+      if (session?.user?.token) {
+        try {
+          const userData = await getUserProfile(session.user.token);
+          setUserProfile(userData);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+          setError("Failed to fetch user profile. Please try again later.");
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload = {
-      campground: formData.campground, // This should be the campground ObjectId
-      checkInDate: formData.checkInDate.toISOString(),
-      checkOutDate: formData.checkOutDate.toISOString(),
-    };
+    if (!checkInDate || !checkOutDate) {
+      setError("Please select both check-in and check-out dates");
+      return;
+    }
+
+    const checkInDateObj = new Date(checkInDate);
+    const checkOutDateObj = new Date(checkOutDate);
+
+    if (checkOutDateObj <= checkInDateObj) {
+      setError("Check-out date must be after check-in date");
+      return;
+    }
+
+    if (!campgroundId) {
+      setError("Campground ID is missing");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const res = await fetch("https://a08-venue-explorer-backend.vercel.app/api/v1/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.token}`,
-        },
-        body: JSON.stringify(payload),
+      if (!session || !session.user || !session.user.token) {
+        setError("You must be logged in to make a booking");
+        return;
+      }
+
+      // Now passing all required parameters to addAppointment
+      const bookingData = await addBooking({
+        capmgroundId: campgroundId,
+        checkInDate: checkInDateObj,
+        checkOutDate: checkOutDateObj,
+        userId: userProfile._id,
+        token: session.user.token,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Booking failed");
-      alert("Booking successful!");
-    } catch (err) {
-      console.error(err);
-      alert("Error creating booking.");
+      // Redirect to success page or booking details
+      router.push(`/booking/confirmation?id=${bookingData._id}`);
+    } catch (error: any) {
+      setError(error.message || "Failed to create booking. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="flex flex-col w-full max-w-md justify-center items-center bg-white text-black p-10 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Book a Campground</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 w-full">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Check-in Date"
-              value={formData.checkInDate}
-              onChange={(value) =>
-                setFormData({ ...formData, checkInDate: value || dayjs() })
-              }
-              className="w-full"
-            />
-            <DatePicker
-              label="Check-out Date"
-              value={formData.checkOutDate}
-              onChange={(value) =>
-                setFormData({ ...formData, checkOutDate: value || dayjs().add(1, 'day') })
-              }
-              className="w-full"
-            />
-          </LocalizationProvider>
-          <Select
-            className="w-full"
-            value={formData.campground}
-            onChange={(e) =>
-              setFormData({ ...formData, campground: e.target.value })
-            }
-            fullWidth
-            required
-            displayEmpty
-          >
-            <MenuItem value="" disabled>Select Campground</MenuItem>
-            <MenuItem value="campgroundObjectId1">The Bloom Pavilion</MenuItem>
-            <MenuItem value="campgroundObjectId2">Spark Space</MenuItem>
-            <MenuItem value="campgroundObjectId3">The Grand Table</MenuItem>
-          </Select>
-          <button
-            type="submit"
-            className="bg-blue-500 w-full text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Book Now
-          </button>
-        </form>
+  // If no session, show login prompt
+  if (!session) {
+    return (
+      <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md">
+        <h2 className="text-xl font-bold mb-4">Booking Form</h2>
+        <p className="text-red-500">Please log in to make a booking</p>
+        <button
+          onClick={() => router.push("/login")}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Go to Login
+        </button>
       </div>
+    );
+  }
+
+  // Get today's date in YYYY-MM-DD format for min attribute
+  const today = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md">
+      <h2 className="text-xl font-bold mb-4">Booking Form</h2>
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block mb-1">Check-in Date:</label>
+          <input
+            type="date"
+            value={checkInDate}
+            onChange={(e) => setCheckInDate(e.target.value)}
+            min={today}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1">Check-out Date:</label>
+          <input
+            type="date"
+            value={checkOutDate}
+            onChange={(e) => setCheckOutDate(e.target.value)}
+            min={checkInDate || today}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1">Selected Campground ID:</label>
+          <input
+            type="text"
+            value={campgroundId || "No campground selected"}
+            className="w-full p-2 border rounded bg-gray-100"
+            disabled
+          />
+          {!campgroundId && (
+            <p className="text-red-500 text-sm mt-1">
+              Please select a campground first
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || !campgroundId}
+          className={`w-full p-2 rounded text-white ${
+            isLoading || !campgroundId
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-500 hover:bg-green-600"
+          }`}
+        >
+          {isLoading ? "Processing..." : "Book Now"}
+        </button>
+      </form>
     </div>
   );
 }
