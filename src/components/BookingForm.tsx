@@ -74,8 +74,8 @@ export default function BookingForm() {
         token: session.user.token,
       });
 
-      // Redirect to success page or booking details
-      router.push(`/booking/confirmation?id=${bookingData._id}`);
+      // Redirect to my bookings page
+      router.push('/mybooking');
     } catch (error: any) {
       setError(error.message || "Failed to create booking. Please try again.");
     } finally {
