@@ -1,97 +1,92 @@
 'use client';
+
 import { useState } from "react";
 import { MenuItem, Select, TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useDispatch } from "react-redux";
-import { addBooking } from "@/redux/features/bookSlice";
+import { useSession } from "next-auth/react";
 import dayjs, { Dayjs } from "dayjs";
 
 export default function BookingForm() {
-  const dispatch = useDispatch();
+  const { data: session } = useSession();
+
   const [formData, setFormData] = useState({
-    nameLastname: '',
-    contactNumber: '',
     campground: '',
-    bookDate: dayjs()
+    checkInDate: dayjs(),
+    checkOutDate: dayjs().add(1, 'day'),
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const bookingItem = {
-      nameLastname: formData.nameLastname,
-      tel: formData.contactNumber,
-      campground: formData.campground,
-      bookDate: formData.bookDate.format('YYYY-MM-DD')
+
+    const payload = {
+      campground: formData.campground, // This should be the campground ObjectId
+      checkInDate: formData.checkInDate.toISOString(),
+      checkOutDate: formData.checkOutDate.toISOString(),
     };
 
-    dispatch(addBooking(bookingItem));
-    
-    setFormData({
-      nameLastname: '',
-      contactNumber: '',
-      campground: '',
-      bookDate: dayjs()
-    });
+    try {
+      const res = await fetch("https://a08-venue-explorer-backend.vercel.app/api/v1/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Booking failed");
+      alert("Booking successful!");
+    } catch (err) {
+      console.error(err);
+      alert("Error creating booking.");
+    }
   };
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
       <div className="flex flex-col w-full max-w-md justify-center items-center bg-white text-black p-10 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Campground Booking</h1>
-        <form 
-          className="space-y-4 w-full flex flex-col items-center"
-          onSubmit={handleSubmit}
-        >
-          <TextField
-            variant="standard"
-            type="text"
-            name="Name-Lastname"
-            label="Name-Lastname"
-            className="w-full"
-            fullWidth
-            required
-            value={formData.nameLastname}
-            onChange={(e) => setFormData({...formData, nameLastname: e.target.value})}
-          />
-          <TextField
-            variant="standard"
-            type="tel"
-            name="Contact-Number"
-            label="Contact-Number"
-            className="w-full"
-            fullWidth
-            required
-            value={formData.contactNumber}
-            onChange={(e) => setFormData({...formData, contactNumber: e.target.value})}
-          />
+        <h1 className="text-2xl font-bold text-center mb-6">Book a Campground</h1>
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              className="w-full"
-              value={formData.bookDate}
-              onChange={(newValue: Dayjs | null) => 
-                setFormData({...formData, bookDate: newValue || dayjs()})
+              label="Check-in Date"
+              value={formData.checkInDate}
+              onChange={(value) =>
+                setFormData({ ...formData, checkInDate: value || dayjs() })
               }
+              className="w-full"
+            />
+            <DatePicker
+              label="Check-out Date"
+              value={formData.checkOutDate}
+              onChange={(value) =>
+                setFormData({ ...formData, checkOutDate: value || dayjs().add(1, 'day') })
+              }
+              className="w-full"
             />
           </LocalizationProvider>
           <Select
             className="w-full"
             value={formData.campground}
-            onChange={(e) => setFormData({...formData, campground: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, campground: e.target.value })
+            }
             fullWidth
             required
+            displayEmpty
           >
-            <MenuItem value="Bloom">The Bloom Pavilion</MenuItem>
-            <MenuItem value="Spark">Spark Space</MenuItem>
-            <MenuItem value="GrandTable">The Grand Table</MenuItem>
+            <MenuItem value="" disabled>Select Campground</MenuItem>
+            <MenuItem value="campgroundObjectId1">The Bloom Pavilion</MenuItem>
+            <MenuItem value="campgroundObjectId2">Spark Space</MenuItem>
+            <MenuItem value="campgroundObjectId3">The Grand Table</MenuItem>
           </Select>
           <button
             type="submit"
-            name="Book Campground"
             className="bg-blue-500 w-full text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors"
           >
-            Book Campground
+            Book Now
           </button>
         </form>
       </div>

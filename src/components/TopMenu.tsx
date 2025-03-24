@@ -26,16 +26,23 @@ export default async function TopMenu() {
         <TopMenuItem title="MyBooking" pageRef="/mybooking" />
       </div>
 
-      {/* ปุ่ม Sign-in / Sign-out */}
-      <div>
+      {/* ปุ่ม Sign-in / Sign-out / Sign-up */}
+      <div className="flex gap-4">
         {session ? (
+          // Show only the sign-out link when the user is signed in
           <Link href="/api/auth/signout" className="text-cyan-600">
             Sign-out
           </Link>
         ) : (
-          <Link href="/api/auth/signin" className="text-cyan-600">
-            Sign-in
-          </Link>
+          <>
+            {/* Show sign-in and sign-up links when the user is not signed in */}
+            <Link href="/api/auth/signin" className="text-cyan-600">
+              Sign-in
+            </Link>
+            <Link href="/api/auth/register" className="text-cyan-600">
+              Sign-up
+            </Link>
+          </>
         )}
       </div>
     </div>

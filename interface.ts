@@ -6,8 +6,6 @@ interface CampgroundItem {
     province: string,
     postalcode: string,
     tel: string,
-    picture: string,
-    dailyrate: number,
     __v: number,
     id: string
   }
@@ -20,8 +18,18 @@ interface CampgroundItem {
   }
 
   interface BookingItem {
-    nameLastname: string;
-    tel: string;
-    campground: string;
+    _id: string;
+    checkInDate: string;
+    checkOutDate: string;
     bookDate: string;
+    user: {
+      name: string;
+      email: string;
+      tel: string;
+    };
+    campground: {
+      name: string;
+      address: string;
+    };
   }
+  
