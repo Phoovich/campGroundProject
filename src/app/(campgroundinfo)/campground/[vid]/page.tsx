@@ -14,8 +14,7 @@ export default async function CampgroundDetails({
   const router = useRouter();
 
   try {
-    const campgroundResponse = await getCampground(params.vid);
-    const campgroundData = campgroundResponse.data;
+    const campgroundData = await getCampground(params.vid);
     return (
       <main className="flex flex-col items-center min-h-screen p-5">
         <Suspense fallback={<LinearProgress className="w-full" />}>
