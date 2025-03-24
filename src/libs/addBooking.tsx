@@ -2,13 +2,14 @@ export async function addBooking({
   campgroundId,
   checkInDate,
   checkOutDate,
-  token, // Add token parameter
+  token,
 }: {
   campgroundId: string;
   checkInDate: Date;
   checkOutDate: Date;
   token: any; // Changed to any to handle both string and object with token property
 }) {
+  console.log("campgroundId");
   // Check if we should use the "token" directly or if it's nested in an object
   // This depends on your API's exact response structure
   const authToken =
@@ -25,8 +26,8 @@ export async function addBooking({
       body: JSON.stringify({
         checkInDate: checkInDate,
         checkOutDate: checkOutDate,
-        // Let the backend use the authenticated user
-        // The backend will use req.user.id from the auth token
+        user: "67c492920d68ac1061128cb5",
+        campground: campgroundId,
       }),
     },
   );

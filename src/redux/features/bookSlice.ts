@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface BookingItem {
   nameLastname: string;
@@ -12,32 +12,24 @@ interface BookState {
 }
 
 const initialState: BookState = {
-  bookItems: []
+  bookItems: [],
 };
 
-export const bookSlice = createSlice({
-  name: 'book',
+const bookSlice = createSlice({
+  name: "book",
   initialState,
   reducers: {
-    addBooking: (state, action: PayloadAction<BookingItem>) => {
-      state.bookItems = state.bookItems.filter(
-        (item) => 
-          item.campground !== action.payload.campground ||
-          item.bookDate !== action.payload.bookDate
-      );
-      state.bookItems.push(action.payload);
+    setBookings(state, action: PayloadAction<BookingItem[]>) {
+      state.bookItems = action.payload;
     },
-    removeBooking: (state, action: PayloadAction<BookingItem>) => {
+    removeBooking(state, action: PayloadAction<BookingItem>) {
       state.bookItems = state.bookItems.filter(
-        (item) => 
-          !(item.nameLastname === action.payload.nameLastname &&
-          item.tel === action.payload.tel &&
-          item.campground === action.payload.campground &&
-          item.bookDate === action.payload.bookDate)
+        (item) => item !== action.payload, // Adjust this logic based on how you identify bookings (e.g., by ID)
       );
-    }
-  }
+    },
+  },
 });
 
-export const { addBooking, removeBooking } = bookSlice.actions;
+export const { setBookings, removeBooking } = bookSlice.actions;
 export default bookSlice.reducer;
+

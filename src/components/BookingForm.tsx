@@ -75,7 +75,7 @@ export default function BookingForm() {
       });
 
       // Redirect to my bookings page
-      router.push('/mybooking');
+      router.push("/mybooking");
     } catch (error: any) {
       setError(error.message || "Failed to create booking. Please try again.");
     } finally {

@@ -1,23 +1,15 @@
-'use client';
+import getBookings from "@/libs/getBookings";
+import BookingList from "@/components/BookingList";
 
-import { useSession } from 'next-auth/react';
-import BookingList from '@/components/BookingList';
-import AdminBookingList from '@/components/AdminBookingList'; // you need to create this component
-import { redirect } from 'next/navigation';
+const mybooking: React.FC = () => {
+  const Booking = getBookings();
 
-export default function Page() {
-  const { data: session, status } = useSession();
+  return (
+    <div>
+      <h1>Bookings</h1>
+      <BookingList bookingList={Booking} />
+    </div>
+  );
+};
 
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    redirect('/login'); // Or display a message instead
-    return null;
-  }
-
-  const role = session.user.role;
-
-  return role === 'admin' ? <AdminBookingList /> : <BookingList />;
-}
+export default mybooking;
