@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import deleteBooking from "@/libs/deleteBooking";
+import EditBookingModal from "./EditBookingModal";
 
 interface bookingList {
   success: boolean;
@@ -12,8 +13,8 @@ interface bookingList {
 
 interface bookingListItem {
   _id: string;
-  checkInDate: Date;
-  checkOutDate: Date;
+  checkInDate: Date | string;
+  checkOutDate: Date | string;
   user: string;
   campground: {
     _id: string;
@@ -22,7 +23,7 @@ interface bookingListItem {
     tel: string;
     id: string;
   };
-  createdAt: Date;
+  createdAt: Date | string;
 }
 
 export default function BookingList({
@@ -40,6 +41,11 @@ export default function BookingList({
     text: string;
   } | null>(null);
 
+  // สำหรับ Modal แก้ไขการจอง
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] =
+    useState<bookingListItem | null>(null);
+
   // เริ่มต้นด้วยข้อมูลจาก prop
   useEffect(() => {
     if (bookingList?.data) {
@@ -47,6 +53,34 @@ export default function BookingList({
     }
     console.log("BookingList Data:", JSON.stringify(bookingList, null, 2));
   }, [bookingList]);
+
+  // ฟังก์ชันเปิด Modal สำหรับแก้ไขการจอง
+  const handleEditClick = (booking: bookingListItem) => {
+    setSelectedBooking(booking);
+    setEditModalOpen(true);
+  };
+
+  // ฟังก์ชันสำหรับอัปเดตการจองในรายการหลังจากแก้ไขสำเร็จ
+  const handleUpdateSuccess = (updatedData: any) => {
+    setBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking._id === selectedBooking?._id
+          ? { ...booking, ...updatedData }
+          : booking,
+      ),
+    );
+
+    // แสดงข้อความสำเร็จ
+    setMessage({
+      type: "success",
+      text: `อัปเดตการจองแคมป์ "${selectedBooking?.campground.name}" สำเร็จ`,
+    });
+
+    // ซ่อนข้อความหลังจากผ่านไป 5 วินาที
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
 
   // ฟังก์ชันสำหรับลบการจอง
   const handleDeleteBooking = async (
@@ -305,6 +339,15 @@ export default function BookingList({
                   </div>
 
                   <div className="flex space-x-2">
+                    {/* ปุ่มแก้ไขการจอง */}
+                    <button
+                      className="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-300 rounded-md text-sm hover:bg-blue-100 transition-colors"
+                      onClick={() => handleEditClick(booking)}
+                    >
+                      แก้ไขการจอง
+                    </button>
+
+                    {/* ปุ่มยกเลิกการจอง */}
                     <button
                       className={`px-3 py-1 rounded-md text-sm transition-colors ${
                         isDeleting[booking._id]
@@ -323,6 +366,8 @@ export default function BookingList({
                         ? "กำลังยกเลิก..."
                         : "ยกเลิกการจอง"}
                     </button>
+
+                    {/* ปุ่มดูแคมป์ */}
                     <a
                       href={`/campground/${booking.campground.id}`}
                       className="px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
@@ -336,6 +381,20 @@ export default function BookingList({
           </div>
         );
       })}
+
+      {/* Modal สำหรับแก้ไขการจอง */}
+      {selectedBooking && (
+        <EditBookingModal
+          bookingId={selectedBooking._id as string}
+          campgroundName={selectedBooking.campground.name}
+          currentCheckInDate={selectedBooking.checkInDate as string}
+          currentCheckOutDate={selectedBooking.checkOutDate as string}
+          token={token}
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSuccess={handleUpdateSuccess}
+        />
+      )}
     </div>
   );
 }
