@@ -40,6 +40,9 @@ export default function BookingList({
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [imageLoadErrors, setImageLoadErrors] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // สำหรับ Modal แก้ไขการจอง
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -62,13 +65,39 @@ export default function BookingList({
 
   // ฟังก์ชันสำหรับอัปเดตการจองในรายการหลังจากแก้ไขสำเร็จ
   const handleUpdateSuccess = (updatedData: any) => {
+    let originalCampground = null;
+
+    if (selectedBooking && typeof updatedData.campground === "string") {
+      // หาข้อมูล campground จากข้อมูลเดิม
+      originalCampground = selectedBooking.campground;
+    }
+
     setBookings((prevBookings) =>
-      prevBookings.map((booking) =>
-        booking._id === selectedBooking?._id
-          ? { ...booking, ...updatedData }
-          : booking,
-      ),
+      prevBookings.map((booking) => {
+        if (booking._id === selectedBooking?._id) {
+          // ถ้า updatedData.campground เป็น string (ID) ให้ใช้ข้อมูล campground เดิม
+          const updatedCampground =
+            typeof updatedData.campground === "string"
+              ? originalCampground
+              : updatedData.campground;
+
+          return {
+            ...booking,
+            ...updatedData,
+            campground: updatedCampground,
+          };
+        }
+        return booking;
+      }),
     );
+
+    // รีเซ็ต imageLoadErrors
+    if (selectedBooking) {
+      setImageLoadErrors((prev) => ({
+        ...prev,
+        [selectedBooking._id]: false,
+      }));
+    }
 
     // แสดงข้อความสำเร็จ
     setMessage({
@@ -80,6 +109,13 @@ export default function BookingList({
     setTimeout(() => {
       setMessage(null);
     }, 5000);
+    setEditModalOpen(false);
+
+    // ล้างข้อมูลการจองที่เลือก
+    setSelectedBooking(null);
+
+    // ถ้าต้องการรีเรนเดอร์ทั้งหน้า (optional)
+    router.refresh();
   };
 
   // ฟังก์ชันสำหรับลบการจอง
@@ -87,7 +123,7 @@ export default function BookingList({
     bookingId: string,
     campgroundName: string,
   ) => {
-    // ตรวจสอบการยืนยันจากผู้ใช้
+    undefined; // ตรวจสอบการยืนยันจากผู้ใช้
     const isConfirmed = window.confirm(
       `ยืนยันการยกเลิกการจองแคมป์ "${campgroundName}" หรือไม่?`,
     );
@@ -247,7 +283,11 @@ export default function BookingList({
         );
 
         // สร้าง image path ตามรูปแบบที่ต้องการ
-        const imagePath = `/img/${booking.campground.name}.jpg`;
+        const imagePath =
+          booking.campground &&
+          (typeof booking.campground === "string"
+            ? "/img/default-camp.jpg" // ถ้าเป็น string (ID) ให้ใช้รูปเริ่มต้น
+            : `/img/${booking.campground.name || "default-camp"}.jpg`);
 
         return (
           <div
@@ -257,31 +297,50 @@ export default function BookingList({
             <div className="flex flex-col md:flex-row">
               {/* รูปแคมป์กราวนด์ */}
               <div className="md:w-1/3 relative h-48 md:h-auto bg-green-50">
-                <img
-                  src={imagePath}
-                  alt={booking.campground.name}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    console.log(
-                      `Failed to load image for ${booking.campground.name}`,
-                    );
-                    // ถ้าโหลดรูปไม่สำเร็จ แสดงไอคอนแทน
-                    const target = e.currentTarget;
-                    target.style.display = "none";
-                    const parent = target.parentElement;
-                    if (parent) {
-                      const fallbackDiv = document.createElement("div");
-                      fallbackDiv.className =
-                        "h-full w-full flex items-center justify-center";
-                      fallbackDiv.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                      `;
-                      parent.appendChild(fallbackDiv);
+                {!imageLoadErrors[booking._id] &&
+                booking.campground &&
+                typeof booking.campground !== "string" &&
+                booking.campground.name ? (
+                  <img
+                    src={imagePath}
+                    alt={
+                      typeof booking.campground === "string"
+                        ? "แคมป์กราวนด์"
+                        : booking.campground.name
                     }
-                  }}
-                />
+                    className="h-full w-full object-cover"
+                    onError={() => {
+                      console.log(
+                        `Failed to load image for ${
+                          typeof booking.campground === "string"
+                            ? "unknown camp"
+                            : booking.campground.name
+                        }`,
+                      );
+                      setImageLoadErrors((prev) => ({
+                        ...prev,
+                        [booking._id]: true,
+                      }));
+                    }}
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-16 w-16 text-green-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
 
               {/* รายละเอียดการจอง */}

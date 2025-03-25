@@ -39,7 +39,7 @@ export default function BookingPage() {
   }, [campgroundId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-10 px-4 sm:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-500 to-blue-50 py-10 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
         {/* เส้นทางการนำทาง (Breadcrumb) */}
         <nav className="text-sm text-white mb-6">
@@ -118,7 +118,7 @@ export default function BookingPage() {
                     />
                   </svg>
                 </li>
-                <li className="text-green-600 font-medium">จองที่พัก</li>
+                <li className="text-orange-100 font-medium">จองที่พัก</li>
               </>
             ) : (
               <li className="text-green-600 font-medium">จองที่พัก</li>
