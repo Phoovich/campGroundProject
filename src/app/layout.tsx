@@ -14,7 +14,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Thai Campgrounds - หาและจองแคมป์กราวนด์ที่ดีที่สุดในประเทศไทย",
+  title: "DinoPark Campgrounds - หาและจองแคมป์กราวนด์ที่ดีที่สุดในประเทศไทย",
   description:
     "แพลตฟอร์มสำหรับการค้นหาและจองแคมป์กราวนด์ทั่วประเทศไทย ให้คุณได้สัมผัสประสบการณ์การพักผ่อนท่ามกลางธรรมชาติ",
   keywords:
