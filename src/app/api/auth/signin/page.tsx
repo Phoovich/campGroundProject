@@ -78,7 +78,7 @@ export default function SignIn() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             ยังไม่มีบัญชี? {" "}
-            <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
+            <Link href="/register" className="font-medium text-green-600 hover:text-green-500">
               สมัครสมาชิก
             </Link>
           </p>
