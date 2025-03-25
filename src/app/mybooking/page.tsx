@@ -50,7 +50,7 @@ const Mybooking = async () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-green-500 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-green-600 px-6 py-4 flex items-center justify-between">
