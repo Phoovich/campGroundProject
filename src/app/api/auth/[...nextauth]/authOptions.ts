@@ -40,5 +40,8 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: '/api/auth/signin',
+  },
   session: { strategy: "jwt" },
 };
